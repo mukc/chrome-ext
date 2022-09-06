@@ -20,3 +20,4 @@ Simple Chrome extension written in JS
 ## How can we find  Extensions on Browser
 
 * click the menu icon (three dots) at the top right of Chrome, point to “More Tools,” then click on “Extensions.”
+* we can also find a short cut to list of extensions pinned next to search bar with a 'Puzzle' icon
