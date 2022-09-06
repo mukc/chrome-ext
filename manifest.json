@@ -1,6 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Chrome Extension - JS",
+  "description": "A simple project written in JavaScript to open multiple tabs and fill form data",
   "version": "1.0.0",
   "content_scripts": [
     {
