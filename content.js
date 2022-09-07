@@ -8,26 +8,40 @@ function startActions() {
 }
 
 /**
- * open the CNBC website and navigate to NASDAQ tab in Market Movers section
+ * Navigate to NASDAQ tab and fetch the second highest gained stock info
  */
 function browserActions() {
 
-    var buttons = document.getElementsByTagName('button');
+    let buttons = document.getElementsByTagName('button');
+
+    if (!buttons || buttons.length < 1) {
+        console.log('No Buttons found on page');
+        return;
+    }
+
+    tabClickAction(buttons);
+
+    fetchSecondHighestGainedStock();
+}
+
+/**
+ * navigate to NASDAQ tab in Market Movers section
+ * @param buttons
+ */
+function tabClickAction(buttons) {
 
     let clickButton = '';
 
-    for (i = 0; i < buttons.length; i++) {
-
-        if (buttons[i].textContent.includes('NASDAQ')) {
-            clickButton = buttons[i];
+    for (const eachButton of buttons) {
+        if (eachButton.textContent.includes('NASDAQ')) {
+            clickButton = eachButton;
+            break;
         }
     }
 
     if (clickButton) {
         clickButton.click();
     }
-
-    fetchSecondHighestGainedStock();
 }
 
 /**
@@ -40,27 +54,32 @@ function fetchSecondHighestGainedStock() {
 
         const existingTables = document.getElementsByClassName('MarketTop-topTable');
 
-        if (!existingTables) {
-            return false;
+        if (!existingTables || existingTables.length < 1) {
+            return;
         }
 
         let topGainers = existingTables[0];
 
-        if (!topGainers) {
-            return false;
+        if (!topGainers || topGainers.rows || topGainers.rows.length < 2) {
+            return;
         }
 
         let secondHighestGainer = topGainers.rows[1];
-        
+
         let stockName = 'N/A';
         let percentGain = 'N/A';
-        
+
         if (secondHighestGainer) {
-            if (secondHighestGainer.cells[1]) {
-                stockName = secondHighestGainer.cells[1].innerText;
+
+            if (secondHighestGainer.cells.length < 4) {
+                return;
             }
-            
-            if (secondHighestGainer.cells[3]) {
+
+            if (secondHighestGainer.cells[1] && secondHighestGainer.cells[1].length > 0) {
+                stockName = secondHighestGainer.cells[1].innerText ?? 'N/A';
+            }
+
+            if (secondHighestGainer.cells[3] && secondHighestGainer.cells[3].length > 0) {
                 percentGain = secondHighestGainer.cells[3].innerText ? secondHighestGainer.cells[3].innerText.slice(0, -1) : 'N/A'; //slice off the % symbol in the end
             }
         }
@@ -72,12 +91,12 @@ function fetchSecondHighestGainedStock() {
 }
 
 /**
- * Open a new tab for Zoho form and pass data from CNBC window to Zoho window
+ * Open a new tab for Zoho form and pass data from CNBC page to Zoho form window
  * @param stockName
- * @param dailyGain
+ * @param percentGain
  * @param timestamp
  */
-function openNewTab(stockName, percentGain, timestamp) {
+function openNewTab (stockName, percentGain, timestamp) {
 
     const formData = {name: stockName, gain: percentGain, time: timestamp};
     const zohoFormLink = 'https://forms.zohopublic.in/developers/form/TestResponses/formperma/-gq-UT1RjqASnGgBsW-M8MmPm8e3YLhcyFam06v2piE';
@@ -87,8 +106,8 @@ function openNewTab(stockName, percentGain, timestamp) {
      * we need to wait until the Zoho form page is fully loaded to receive the message posted
      */
     setTimeout(function () {
-        formWindow.postMessage(formData, 'https://forms.zohopublic.in');
-    }, 2000)
+        formWindow.postMessage(formData, 'https://forms.zohopublic.in')
+    }, 2000);
 }
 
 /**
@@ -97,28 +116,29 @@ function openNewTab(stockName, percentGain, timestamp) {
  */
 window.onload = function () {
 
-    if (window.location.href.includes('zohopublic')) {
-
-        window.addEventListener('message', function (event) {
-
-            if (window.location.href.includes('zohopublic')) {
-
-                /**
-                 * for security purpose,
-                 * make sure we are only looking for the messages originated from CNBC domain
-                 */
-                if (event.origin !== 'https://www.cnbc.com') {
-                    return;
-                }
-
-                /**
-                 * auto fill the zoho form with stock data
-                 */
-                document.getElementsByName('SingleLine')[0].value = event.data.name;
-                document.getElementsByName('SingleLine1')[0].value = event.data.gain;
-                document.getElementsByName('SingleLine2')[0].value = event.data.time;
-            }
-    
-        }, false)
+    if (!window.location.href.includes('zohopublic')) {
+        return;
     }
+
+    window.addEventListener('message', function (event) {
+        if (!window.location.href.includes('zohopublic')) {
+            return;
+        }
+
+        /**
+         * for security purpose,
+         * make sure we are only looking for the messages originated from CNBC domain
+         */
+        if (event.origin !== 'https://www.cnbc.com') {
+            return;
+        }
+
+        /**
+         * auto fill the zoho form with stock data
+         */
+        document.getElementsByName('SingleLine')[0].value = event.data.name;
+        document.getElementsByName('SingleLine1')[0].value = event.data.gain;
+        document.getElementsByName('SingleLine2')[0].value = event.data.time;
+
+    }, false)
 }
