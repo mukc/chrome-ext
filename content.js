@@ -60,7 +60,7 @@ function fetchSecondHighestGainedStock() {
 
         let topGainers = existingTables[0];
 
-        if (!topGainers || topGainers.rows || topGainers.rows.length < 2) {
+        if (!topGainers || !topGainers.rows || topGainers.rows.length < 2) {
             return;
         }
 
@@ -71,16 +71,16 @@ function fetchSecondHighestGainedStock() {
 
         if (secondHighestGainer) {
 
-            if (secondHighestGainer.cells.length < 4) {
+            if (secondHighestGainer.cells.length < 2) {
                 return;
             }
 
-            if (secondHighestGainer.cells[1] && secondHighestGainer.cells[1].length > 0) {
-                stockName = secondHighestGainer.cells[1].innerText ?? 'N/A';
+            if (secondHighestGainer.cells[1] && secondHighestGainer.cells[1].innerText) {
+                stockName = secondHighestGainer.cells[1].innerText;
             }
 
-            if (secondHighestGainer.cells[3] && secondHighestGainer.cells[3].length > 0) {
-                percentGain = secondHighestGainer.cells[3].innerText ? secondHighestGainer.cells[3].innerText.slice(0, -1) : 'N/A'; //slice off the % symbol in the end
+            if (secondHighestGainer.cells[3] && secondHighestGainer.cells[3].innerText) {
+                percentGain = secondHighestGainer.cells[3].innerText.slice(0, -1); //slice off the % symbol in the end
             }
         }
 
@@ -96,7 +96,7 @@ function fetchSecondHighestGainedStock() {
  * @param percentGain
  * @param timestamp
  */
-function openNewTab (stockName, percentGain, timestamp) {
+function openNewTab(stockName, percentGain, timestamp) {
 
     const formData = {name: stockName, gain: percentGain, time: timestamp};
     const zohoFormLink = 'https://forms.zohopublic.in/developers/form/TestResponses/formperma/-gq-UT1RjqASnGgBsW-M8MmPm8e3YLhcyFam06v2piE';
