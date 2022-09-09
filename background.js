@@ -31,7 +31,8 @@ chrome.tabs.onUpdated.addListener(function (tabId, info, tab) {
 })
 
 /**
- *
+ * waits for the message from CNBC witht the required stock data and
+ * this passes the message to Zoho page to update the form fields
  */
 chrome.runtime.onMessage.addListener((message, sender) => {
 
