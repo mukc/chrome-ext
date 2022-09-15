@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Chrome Extension - JS",
-  "description": "A simple project written in JavaScript to open multiple tabs and fill form data",
+  "description": "A simple project to open multi tabs and fill form data written in JavaScript",
   "version": "1.0.0",
   "content_scripts": [
     {
@@ -10,11 +10,16 @@
     }
   ],
   "permissions": [
-    "contextMenus",
     "tabs"
   ],
   "browser_action": {
     "default_popup": "popup.html",
     "default_title": "Chrome Ext"
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
   }
 }
